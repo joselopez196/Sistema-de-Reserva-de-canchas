@@ -1,6 +1,3 @@
-En la página del repositorio, pulsa **“Agregar un archivo README”**. En el editor de GitHub, pega todo este contenido y confirma los cambios en la rama `main`.
-
-```markdown
 # Sistema de Reserva de Canchas
 
 Página web para consultar horarios y administrar reservas de canchas deportivas. Permite gestionar clientes y pagos, revisar el historial y descargar o restaurar respaldos.
