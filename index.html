@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Sistema web para administrar reservas, clientes, pagos y disponibilidad de canchas." />
+    <title>Sistema de Reserva de Canchas</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="page-header"><span class="brand-mark" aria-hidden="true">RC</span><div class="header-copy"><h1>Sistema de Reserva de Canchas</h1><p class="subtitle">Administra horarios, reservas y pagos desde un solo lugar.</p></div><button class="theme-toggle" id="theme-toggle" type="button" aria-label="Activar modo oscuro" aria-pressed="false" title="Activar modo oscuro"><svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></svg><svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 14.2A8.5 8.5 0 0 1 9.8 3.2 8.5 8.5 0 1 0 20.8 14.2Z"></path></svg><span class="theme-label">Modo oscuro</span></button></header>
+
+      <nav class="tabs" aria-label="Secciones principales">
+        <button class="tab active" type="button" data-view="reservas">Reservas</button>
+        <button class="tab" type="button" data-view="clientes">Clientes</button>
+        <button class="tab" type="button" data-view="pagos">Pagos</button>
+        <button class="tab" type="button" data-view="reportes">Reportes e historial</button>
+      </nav>
+
+      <section class="view active" id="view-reservas">
+        <div class="view-heading"><div><h2>Panel de reservas</h2><p>Consulta horarios libres, evita cruces y administra cada reserva desde su creación hasta su cancelación.</p></div><span class="section-icon" aria-hidden="true">▦</span></div>
+
+        <p class="summary-caption" id="summary-caption"></p>
+        <div class="stats" aria-label="Resumen">
+          <article class="stat"><strong id="available-count">0</strong><span>horas libres según los filtros</span></article>
+          <article class="stat"><strong id="reserved-count">0</strong><span>reservas activas</span></article>
+          <article class="stat"><strong id="paid-total">S/ 0.00</strong><span>pagado de estas reservas</span></article>
+          <article class="stat"><strong id="pending-total">S/ 0.00</strong><span>pendiente de estas reservas</span></article>
+        </div>
+        <div class="booking-layout">
+          <section class="panel availability-panel">
+            <h2>Disponibilidad</h2>
+            <p class="help">Selecciona una hora para preparar tu reserva.</p>
+            <div class="filters">
+              <label>Ver fecha<input id="filter-date" type="date" /></label>
+              <label>Filtrar cancha<select id="filter-court"><option value="all">Todas las canchas</option></select></label>
+            </div>
+            <div class="legend"><span><i class="dot free-dot"></i> Disponible</span><span><i class="dot busy-dot"></i> Reservado</span></div>
+            <div id="slot-grid" class="slot-grid"></div>
+            <div class="section-title"><h2>Reservas del día</h2></div>
+            <div class="list-toolbar"><label class="inline-search">Buscar en este día<input id="reservation-search" type="search" placeholder="Nombre del cliente" /></label><button id="clear-day" class="button secondary" type="button">Cancelar reservas visibles</button></div>
+            <div id="reservations-list" class="reservations-list"></div>
+          </section>
+          <aside class="panel form-panel">
+            <h2>Nueva reserva</h2>
+            <p class="help">Selecciona un horario disponible y completa la reserva.</p>
+            <form id="booking-form">
+              <label>Cliente<input id="customer" name="customer" autocomplete="name" placeholder="Nombre completo" required /></label>
+              <label>Correo<input id="booking-email" name="email" type="email" placeholder="cliente@correo.com" /></label>
+              <label>Teléfono<input id="phone" name="phone" inputmode="tel" placeholder="999 999 999" /></label>
+              <label>Cancha<select id="court" name="court" required></select></label>
+              <label>Fecha<input id="date" name="date" type="date" required /></label>
+              <div class="grid-2"><label>Hora<select id="time" name="time" required></select></label><label>Duración<select id="duration" name="duration"><option value="60">1 hora</option><option value="90">1 h 30 min</option><option value="120">2 horas</option></select></label></div>
+              <div class="price-preview"><span>Total estimado</span><strong id="booking-price">S/ 0.00</strong></div>
+              <div class="form-actions"><button class="button primary" id="booking-submit" type="submit">Crear reserva</button><button class="button secondary hidden" id="booking-cancel-edit" type="button">Salir de edición</button></div>
+              <p id="form-message" class="message" role="status"></p>
+            </form>
+          </aside>
+        </div>
+
+
+      </section>
+
+      <section class="view panel" id="view-clientes">
+        <div class="view-heading"><div><h2>Gestión de clientes</h2><p>Guarda los datos de contacto y actualízalos cuando sea necesario.</p></div><span class="section-icon" aria-hidden="true">♙</span></div>
+        <h3 class="subheading">Clientes registrados</h3>
+        <label class="inline-search">Buscar cliente<input id="client-search" type="search" placeholder="Nombre, correo o teléfono" /></label>
+        <form id="client-form" class="client-form">
+          <label>Nombre<input id="client-name" required /></label>
+          <label>Correo<input id="client-email" type="email" /></label>
+          <label>Teléfono<input id="client-phone" inputmode="tel" /></label>
+          <div class="actions"><button class="button primary" type="submit">Guardar</button><button class="button secondary" id="client-cancel" type="reset">Cancelar</button></div>
+        </form>
+        <div class="table-wrap"><table><thead><tr><th>Nombre</th><th>Correo</th><th>Teléfono</th><th>Acciones</th></tr></thead><tbody id="clients-list"></tbody></table></div>
+        <p class="message" id="client-message" role="status"></p>
+      </section>
+
+      <section class="view panel" id="view-pagos">
+        <div class="view-heading"><div><h2>Control de pagos</h2><p>Registra los importes recibidos y consulta automáticamente el saldo pendiente.</p></div><span class="section-icon" aria-hidden="true">S/</span></div>
+        <p class="help">Registra únicamente pagos ya recibidos. Este formulario no realiza cobros.</p>
+        <p class="help">Totales de todas las fechas y canchas.</p>
+        <div class="payment-totals"><div><span>Pagado</span><strong id="all-paid">S/ 0.00</strong></div><div><span>Pendiente</span><strong id="all-pending">S/ 0.00</strong></div></div>
+        <form id="payment-form" class="payment-form">
+          <label>Reserva pendiente<select id="payment-booking" required><option value="">Selecciona una reserva</option></select></label>
+          <label>Método<select id="payment-method"><option>Efectivo</option><option>Yape</option><option>Plin</option><option>Transferencia</option><option>Tarjeta</option><option>Otro</option></select></label>
+          <label>Importe recibido (S/)<input id="payment-amount" type="number" min="0.01" step="0.01" required /></label>
+          <label>Referencia<input id="payment-reference" placeholder="Opcional" /></label>
+          <button class="button primary" type="submit">Registrar pago recibido</button>
+        </form>
+        <label class="inline-search">Buscar pago<input id="payment-search" type="search" placeholder="Cliente, método o referencia" /></label>
+        <div class="table-wrap"><table><thead><tr><th>Cliente / reserva</th><th>Método</th><th>Referencia</th><th>Total</th><th>Acciones</th></tr></thead><tbody id="payments-list"></tbody></table></div>
+        <p class="message" id="payment-message" role="status"></p>
+      </section>
+
+      <section class="view panel" id="view-reportes">
+        <div class="view-heading"><div><h2>Reportes e historial</h2><p>Conserva la información, descarga los reportes y recupera tus respaldos.</p></div><span class="section-icon" aria-hidden="true">↗</span></div>
+        <h3 class="subheading">Respaldos y reportes</h3>
+        <p class="help">Descarga una copia antes de cambiar de navegador o computadora. El reporte incluye todas las reservas, también las canceladas.</p>
+        <div class="report-actions"><button class="button secondary" id="export-json" type="button">Descargar respaldo JSON</button><button class="button secondary" id="export-csv" type="button">Descargar reporte CSV</button></div>
+        <label class="import-label">Importar respaldo o reservas antiguas<input id="import-file" type="file" accept=".json,application/json" /></label>
+        <button class="button primary" id="restore-button" type="button">Restaurar copia revisada</button>
+        <p class="message" id="report-message" role="status"></p>
+        <details><summary>Recuperar un formato antiguo</summary><p class="help">Puedes importar un respaldo JSON anterior de este sistema. Las reservas antiguas se marcarán como activas y sin pagos registrados.</p></details>
+        <div class="history-heading"><h2>Historial de reservas</h2><label class="history-search">Buscar<input id="history-search" type="search" placeholder="Cliente, cancha o fecha" /></label><span id="history-count" class="help"></span></div>
+        <div class="table-wrap"><table><thead><tr><th>Fecha y hora</th><th>Cliente</th><th>Cancha</th><th>Estado</th><th>Total</th><th>Acciones</th></tr></thead><tbody id="history-list"></tbody></table></div>
+      </section>
+
+
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
