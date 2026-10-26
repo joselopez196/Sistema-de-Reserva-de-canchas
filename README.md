@@ -103,4 +103,3 @@ Para compartir información entre varios usuarios o dispositivos, se necesitarí
 ## Autor
 
 Joselopez196
-```
